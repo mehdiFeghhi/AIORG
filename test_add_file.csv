@@ -1,0 +1,5 @@
+person_id,age,gender,openness,conscientiousness,extraversion,agreeableness,neuroticism
+1,25,M,0.80,0.60,0.70,0.75,0.50
+2,30,F,0.90,0.80,0.60,0.85,0.45
+3,35,M,0.75,0.55,0.65,0.70,0.60
+4,40,F,0.85,0.70,0.55,0.80,0.50
