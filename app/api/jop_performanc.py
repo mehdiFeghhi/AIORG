@@ -38,13 +38,13 @@ def add_job_performance(
 
 @router.get("/performance/{job_id}/{metric}", response_model=Dict[int, List[Dict[str, Union[int, float]]]])
 def get_performance_by_job(
-    job_id: int, performance_metric: str, db: Session = Depends(get_db)
+    job_id: int, metric: str, db: Session = Depends(get_db)
 ):
     """
     Get job performance data by job ID, grouped by Persian calendar year.
     """
     try:
-        return JobPerformance.get_performance_by_job_and_date(db, job_id, performance_metric)
+        return JobPerformance.get_performance_by_job_and_date(db, job_id, metric)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 

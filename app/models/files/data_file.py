@@ -2,8 +2,11 @@ from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship,Session
 from app.database import Base
 from typing import Any
+from fastapi import UploadFile
 from khayyam import JalaliDatetime
 from app.services.file_service import save_file_to_disk
+from app.models.files.exam_info import ExamDetails
+import os
 
 
 class DataFile(Base):
@@ -17,52 +20,71 @@ class DataFile(Base):
     # Foreign key to link with ExamDetails
     exam_id = Column(Integer, ForeignKey('exam_details.id'), nullable=False)
 
+
     @classmethod
     def add_file(
         cls,
         db: Session,
-        file: Any,
+        file: UploadFile,
         exam_id: int,
         created_at: str
     ) -> "DataFile":
         """
-        Adds a file to the database after saving it to disk.
+        Adds a file to the database after saving it to disk with proper validation.
 
         Args:
-            db (Session): SQLAlchemy database session.
-            file (UploadFile): The uploaded file.
-            exam_id (int): ID of the related exam.
-            created_at (str): Persian calendar datetime string.
+            db: SQLAlchemy database session
+            file: The uploaded file
+            exam_id: ID of the related exam (must exist in database)
+            created_at: Persian calendar datetime string in format "YYYY/MM/DD"
 
         Returns:
-            DataFile: The created DataFile object.
+            The created DataFile object
+
+        Raises:
+            ValueError: For invalid date format or non-existent exam_id
+            RuntimeError: For other operational errors
         """
+        # Validate exam exists first (before file operations)
+        exam = db.query(ExamDetails).get(exam_id)
+        if not exam:
+            raise ValueError(f"Exam with ID {exam_id} does not exist")
+
         try:
-            # Convert Persian calendar datetime to Gregorian datetime
+            # Validate and convert date
             jalali_datetime = JalaliDatetime.strptime(created_at, "%Y/%m/%d")
             gregorian_datetime = jalali_datetime.todatetime()
+        except ValueError as e:
+            raise ValueError("Invalid Persian calendar datetime format. Use YYYY/MM/DD") from e
 
-            # Save the uploaded file to disk
+        try:
+            # Save file to disk
             file_path = save_file_to_disk(file, f"exam_{exam_id}")
 
-            # Create a new DataFile record
+            # Create and save record
             data_file = cls(
                 name=file.filename,
                 path=file_path,
                 created_at=gregorian_datetime,
                 exam_id=exam_id
             )
+            
             db.add(data_file)
             db.commit()
             db.refresh(data_file)
-
+            
             return data_file
 
-        except ValueError:
-            raise ValueError("Invalid Persian calendar datetime format. Use YYYY/MM/DD .")
         except Exception as e:
-            raise RuntimeError(f"An error occurred while adding the file: {str(e)}")
-
+            db.rollback()
+            # Clean up file if it was saved but DB operation failed
+            if 'file_path' in locals():
+                try:
+                    os.remove(file_path)
+                except OSError:
+                    pass  # Don't mask original error
+            
+            raise RuntimeError(f"Failed to add file: {str(e)}") from e
 
 
     @classmethod

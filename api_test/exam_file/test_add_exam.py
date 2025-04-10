@@ -1,12 +1,16 @@
-# app/tests/test_exam.py
+# exam_file/test_add_exam.py
 import pytest
-from fastapi.testclient import TestClient
-from ..app.main import app  # فرض بر این است که FastAPI app در این مسیر باشد
-from ..app.database import SessionLocal, engine
-from ..app.models.files.exam_info import ExamDetails
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../app'))
+from fastapi.testclient import TestClient
+
+
+# Add the project root directory to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+from app.main import app  # Now this will work
+from app.database import SessionLocal, engine
+from app.models.files.exam_info import ExamDetails
 
 
 @pytest.fixture(scope="module")
@@ -26,7 +30,7 @@ def test_add_exam(db_session):
     
     # ارسال داده برای افزودن آزمون جدید
     response = client.post(
-        "/add_exam",
+        "/files/add_exam",
         data={
             "title": "Test Exam",
             "creator_name": "John Doe",
@@ -45,4 +49,17 @@ def test_add_exam(db_session):
     assert exam.title == "Test Exam"
     assert exam.creator_name == "John Doe"
     assert exam.description == "This is a test exam."
+
+
+
+def test_add_exam_missing_title(db_session):
+    client = TestClient(app)
+    response = client.post(
+        "/files/add_exam",
+        data={
+            "creator_name": "Dr. Smith",
+            "description": "Missing title test"
+        }
+    )
+    assert response.status_code == 422  # FastAPI validation error
 

@@ -64,7 +64,7 @@ async def add_exam(
             "message": "Exam added successfully",
             "exam_id": new_exam.id
         }
-
+    
     except Exception as e:
         # Handle unexpected errors
         raise HTTPException(
@@ -82,22 +82,25 @@ async def get_exam_id_name(db: Session = Depends(get_db)) -> Dict[str, Union[str
         # Call the class method to retrieve the list of exams
         exams = ExamDetails.get_exam_list(db)
 
-        if not exams:
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred: {str(e)}"
+        )
+    
+    if not exams:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="No exams found"
             )
 
         # Convert the result into a list of dictionaries
-        exams_list = [{"id": exam[0], "title": exam[1]} for exam in exams]
+    exams_list = [{"id": exam[0], "title": exam[1]} for exam in exams]
 
-        return {
+    return {
             "message": "Exams retrieved successfully",
             "exams": exams_list
         }
 
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred: {str(e)}"
-        )
+
