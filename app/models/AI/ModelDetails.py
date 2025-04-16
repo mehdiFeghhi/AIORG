@@ -67,6 +67,7 @@ class ModelDetails(Base):
         Returns:
             ModelDetails: The found record, or None if no record exists.
         """
+        
         return db.query(cls).filter(cls.id == model_id).first()
     
     @classmethod

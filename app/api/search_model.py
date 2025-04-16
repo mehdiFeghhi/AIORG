@@ -3,25 +3,30 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.AI.ModelDetails import ModelDetails
 from typing import List, Dict, Optional
+from datetime import datetime
 
 router = APIRouter()
 
 
 @router.get("/details_by_id", status_code=status.HTTP_200_OK)
 async def find_model_details_by_id(
-    query_id: str, 
+    query_id: int,
     db: Session = Depends(get_db)
-) -> Dict[str, str | int | float | None]:
+) -> Dict[str, str | int | float | None | Dict[str, float] | datetime]:
     """
     Fetch model details by its unique ID.
 
     Args:
-        query_id (str): The unique ID of the model.
+        query_id (int): The unique ID of the model.
         db (Session): SQLAlchemy session (provided by Depends).
     Returns:
         dict: Model details in JSON format.
     """
+
     model_details = ModelDetails.find_model_by_id(db, query_id)
+
+
+    print(f"res: {model_details}")
 
     if not model_details:
         raise HTTPException(
@@ -30,7 +35,6 @@ async def find_model_details_by_id(
         )
 
     return {
-        # "model": model_details.model,
         "address": model_details.address,
         "architecture": model_details.architecture,
         "accuracy_results": model_details.accuracy_results,
@@ -53,18 +57,20 @@ async def find_model_details_by_id(
     }
 
 
+
+
 @router.get("/details_by_exam_and_job", status_code=status.HTTP_200_OK)
 async def find_models_by_exam_and_job(
     exam_id: Optional[int] = None,
     job_id: Optional[int] = None,
     db: Session = Depends(get_db)
-) -> List[Dict[str, Optional[str]]]:
+) -> List[Dict[str, Optional[str] | int | Dict[str, float]]]:
     """
     Fetches model details based on exam_id and job_id.
 
     Args:
-        exam_id (str): The exam ID to filter models (optional).
-        job_id (str): The job ID to filter models (optional).
+        exam_id (int, optional): The exam ID to filter models. Defaults to None.
+        job_id (int, optional): The job ID to filter models. Defaults to None.
         db (Session): SQLAlchemy database session.
 
     Returns:
@@ -76,7 +82,7 @@ async def find_models_by_exam_and_job(
         {
             "model_id": model.id,
             "version": model.version,
-            "model_name": model.model,
+            "model_name": model.name_object_predict,
             "accuracy_result": model.accuracy_results
         }
         for model in models
