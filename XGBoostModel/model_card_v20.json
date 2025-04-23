@@ -1,0 +1,41 @@
+{
+    "name_object_predict": "job_improvement",
+    "address": "XGBoostModel/model_v20.joblib",
+    "feature_engineering_details_address": "XGBoostModel/feature_engineering_v20.json",
+    "architecture": "XGBoostModel",
+    "accuracy_results": {
+        "mean": 0.45,
+        "std": 0.0
+    },
+    "f1_score_results": {
+        "mean": 0.4497920380273321,
+        "std": 5.551115123125783e-17
+    },
+    "precision_results": {
+        "mean": 0.45925925925925926,
+        "std": 0.0
+    },
+    "recall_results": {
+        "mean": 0.4444444444444445,
+        "std": 5.551115123125783e-17
+    },
+    "t_test_results_accuracy": {
+        "t_stat": Infinity,
+        "p_value": 0.0
+    },
+    "t_test_results_f1_score": {
+        "t_stat": -Infinity,
+        "p_value": 0.0
+    },
+    "confidence_level_accuracy": 100.0,
+    "confidence_level_f1_score": 100.0,
+    "num_all_samples": 100,
+    "num_features": 6,
+    "split_test": 20,
+    "n_splits_t_test": 5,
+    "number_of_labels": 3,
+    "model_evaluation_date": "2025-04-19T01:45:13.322064",
+    "version": "v20",
+    "exam_id": 1,
+    "job_id": 1
+}

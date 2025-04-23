@@ -3,6 +3,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import relationship
 from app.database import Base
+from datetime import datetime
+import numpy as np
+import pandas as pd
+from typing import Any, Dict
+
 
 
 class ModelDetails(Base):
@@ -32,6 +37,24 @@ class ModelDetails(Base):
 
     job_id = Column(Integer, nullable=False)  # Associated job ID
     
+
+    @staticmethod
+    def _clean_card_info(input_dict: dict) -> dict:
+        def convert(value):
+            if isinstance(value, (np.integer, np.int64, np.int32)):
+                return int(value)
+            elif isinstance(value, (np.floating, np.float64, np.float32)):
+                return float(value)
+            elif isinstance(value, np.ndarray):
+                return value.tolist()
+            elif isinstance(value, np.bool_):
+                return bool(value)
+            elif isinstance(value, (datetime, str, float, int, bool, type(None))):
+                return value
+            return str(value)  # fallback
+
+        return {key: convert(val) for key, val in input_dict.items()}
+
     @classmethod
     def add_record(cls, db: Session, card_info: dict):
         """
@@ -45,12 +68,15 @@ class ModelDetails(Base):
             ModelDetails: The newly added record.
         """
         try:
-            record = cls(**card_info)
+            clean_info = cls._clean_card_info(card_info)
+            record = cls(**clean_info)
             db.add(record)
             db.commit()
             db.refresh(record)
             return record
         except Exception as e:
+            print(e)
+            print('error !E#')
             db.rollback()  # در صورت خطا، تراکنش را بازگردانی کنید
             raise e  # خطا را مجدداً منتشر کنید
 
@@ -140,3 +166,4 @@ class ModelDetails(Base):
             db.refresh(model)
             return model
         return None
+

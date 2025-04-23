@@ -29,6 +29,8 @@ def enhance_dataset(
     """
     X = X_main.copy()
     Y = Y_main.copy()
+    
+    base_feature = X.columns.to_list()
 
     # Categorize the target variable into discrete classes
     Y = categorize_to_classes(Y, num_classes)
@@ -38,7 +40,14 @@ def enhance_dataset(
         X, Y, test_size=test_size, random_state=random_state
     )
 
-    base_feature = X.columns.to_list()
+    X_train = X_train.reset_index(drop=True)
+    Y_train = Y_train.reset_index(drop=True) # <-- اضافه شده برای رفع مشکل همراستایی
+
+    X_test = X_test.reset_index(drop=True)
+    Y_test = Y_test.reset_index(drop=True) # <-- اضافه شده برای رفع مشکل همراستایی
+
+
+
     # Extract attributes for processing
     attributes = extract_attributes_from_df(X_train)
     
@@ -97,7 +106,9 @@ def enhance_dataset(
     X_train = X_train.reindex(columns=feature_order, fill_value=0)
     X_test = X_test.reindex(columns=feature_order, fill_value=0)
 
-
+    print("help me!")
+    print(X_train)
+    print("Please help me")
     # Return the processed datasets, categorized targets, and parameters for future use
     return (
         X_train, X_test, Y_train, Y_test, {

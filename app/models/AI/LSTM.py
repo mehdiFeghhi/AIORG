@@ -100,28 +100,28 @@ class LSTMModel(BaseModel):
         print(f"Test Accuracy: {accuracy:.4f}")
         return accuracy
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     
-    # Define the base directory for saving models
-    base_directory_model = os.path.expanduser("~/Documents/AIOrganization/Models_save")
+#     # Define the base directory for saving models
+#     base_directory_model = os.path.expanduser("~/Documents/AIOrganization/Models_save")
 
-    # Set the folder name for saving the model (optional)
-    name_position = "Test"
+#     # Set the folder name for saving the model (optional)
+#     name_position = "Test"
 
-    # Generate example feature data and labels
-    X = np.random.rand(100, 10, 5)  # 100 samples, 10 time steps, 5 features each
-    y = np.random.randint(0, 3, 100)  # Multi-class labels (e.g., 0, 1, 2)
+#     # Generate example feature data and labels
+#     X = np.random.rand(100, 10, 5)  # 100 samples, 10 time steps, 5 features each
+#     y = np.random.randint(0, 3, 100)  # Multi-class labels (e.g., 0, 1, 2)
 
-    # Initialize the LSTM model
-    model = LSTMModel(
-        model=LSTM,       # Pass the LSTM class
-        input_size=5,    # Number of features per timestep
-        output_size=3,    # Number of output classes
-        hidden_size=64,   # Hidden layer size
-        num_layers=2,     # Number of LSTM layers
-        dropout=0.3,      # Dropout rate
-        param_grid=None   # No hyperparameter grid for simplicity
-    )
+#     # Initialize the LSTM model
+#     model = LSTMModel(
+#         model=LSTM,       # Pass the LSTM class
+#         input_size=5,    # Number of features per timestep
+#         output_size=3,    # Number of output classes
+#         hidden_size=64,   # Hidden layer size
+#         num_layers=2,     # Number of LSTM layers
+#         dropout=0.3,      # Dropout rate
+#         param_grid=None   # No hyperparameter grid for simplicity
+#     )
 
-    # Train, evaluate, and save the model along with metadata
-    model.save_model_with_card(X, y, base_directory_model, name_position)
+#     # Train, evaluate, and save the model along with metadata
+#     model.save_model_with_card(X, y, base_directory_model, name_position)

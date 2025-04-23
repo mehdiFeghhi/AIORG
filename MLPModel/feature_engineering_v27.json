@@ -1,0 +1,45 @@
+{
+    "base_feature": [
+        "feature_0",
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "feature_4",
+        "feature_5"
+    ],
+    "normalization_params": {
+        "feature_0": {
+            "min": 0.02535074341545751,
+            "max": 0.9905051420006733
+        },
+        "feature_1": {
+            "min": 0.009197051616629648,
+            "max": 0.9929647961193003
+        },
+        "feature_2": {
+            "min": 0.006952130531190703,
+            "max": 0.9872761293149445
+        },
+        "feature_3": {
+            "min": 0.016587828927856152,
+            "max": 0.9997176732861306
+        },
+        "feature_4": {
+            "min": 0.005061583846218687,
+            "max": 0.9966368370739054
+        },
+        "feature_5": {
+            "min": 0.01083765148029836,
+            "max": 0.980032575285477
+        }
+    },
+    "one_hot_mappings": {},
+    "feature_order": [
+        "feature_0",
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "feature_4",
+        "feature_5"
+    ]
+}

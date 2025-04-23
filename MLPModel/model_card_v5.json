@@ -1,0 +1,37 @@
+{
+    "name_object_predict": "job_improvement",
+    "address": "MLPModel/model_v5.joblib",
+    "feature_engineering_details_address": "MLPModel/feature_engineering_v5.json",
+    "architecture": "MLPModel",
+    "accuracy_results": {
+        "mean": 0.33999999999999997,
+        "std": 0.037416573867739424
+    },
+    "f1_score_results": {
+        "mean": 0.3382902065255007,
+        "std": 0.04035404718992529
+    },
+    "precision_results": {
+        "mean": 0.3358730158730159,
+        "std": 0.03976546890213671
+    },
+    "recall_results": {
+        "mean": 0.3472222222222222,
+        "std": 0.04120110270608703
+    },
+    "t_test_results_accuracy": {
+        "t_stat": 0.8320495790741679,
+        "p_value": 0.4521704310312338
+    },
+    "t_test_results_f1_score": {
+        "t_stat": 1.8440152009800304,
+        "p_value": 0.13895000020733816
+    },
+    "confidence_level_accuracy": 54.78295689687662,
+    "confidence_level_f1_score": 86.10499997926618,
+    "num_all_samples": 100,
+    "num_features": 6,
+    "split_test": 20,
+    "n_splits_t_test": 5,
+    "number_of_labels": 3,
+    "model_evaluation_date": 

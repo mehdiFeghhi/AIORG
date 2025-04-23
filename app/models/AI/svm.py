@@ -29,12 +29,3 @@ class SVMModel(BaseModel):
 
 
 
-# Usage example
-if __name__ == "__main__":
-    base_directory_model = os.path.expanduser("~/Documents/AIOrganization/Models_save")  # The base directory for saving models
-    name_position = "Test"  # This can be set to a specific folder name if needed
-    X = np.random.rand(100, 5)  # Example feature data
-    y = np.random.randint(0, 2, 100)  # Example binary labels
-
-    model = SVMModel()
-    model.save_model_with_card(X, y, base_directory_model, name_position)

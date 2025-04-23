@@ -46,8 +46,8 @@ def train_and_evaluate(model_class, best_params, X_train, Y_train, X_test, Y_tes
 
 def train_model(
     model_class, X, Y, job_id, exam_id, base_directory_model,
-    num_classes,name_object_predict,n_iterations=5,test_size=0.2, param_grid=None,
-    db: Session = Depends(get_db), name_position=None
+    num_classes,name_object_predict,db: Session,n_iterations=5,test_size=0.2, param_grid=None,
+    name_position=None
 ):
     """
     Train the model, evaluate it, and save details to the database.
@@ -88,8 +88,11 @@ def train_model(
     best_final_params = max(avg_accuracy_per_param, key=lambda x: x[1])[0]
     final_model = model_class(**best_final_params)
     X_train, X_test, Y_train, Y_test,feature_engineering_details = enhance_dataset(X,Y,num_classes,test_size)
-    final_model.fit(X_train, X_test)
-    
+    final_model.fit(X_train, Y_train)
+    # print("Hi mehdi")
+    # print(X_train[1])
+    # print("Bye mehdi")
+
     model_directory, model_filename, card_filename, feature_engg_filename, next_version = manage_model_directory(
         base_directory_model, name_position, model_class.__name__
     )
@@ -129,10 +132,34 @@ def train_model(
         'exam_id': exam_id,
         'job_id': job_id
     }
+
+    card_info_json = {
+        'name_object_predict': name_object_predict,
+        'address': save_place,
+        'feature_engineering_details_address': feature_engg_path,
+        'architecture': model_class.__name__,
+        'accuracy_results': {'mean': float(np.mean(accuracies)), 'std': float(np.std(accuracies))},
+        'f1_score_results': {'mean': float(np.mean(f1_scores)), 'std': float(np.std(f1_scores))},
+        'precision_results': {'mean': float(np.mean(precisions)), 'std': float(np.std(precisions))},
+        'recall_results': {'mean': float(np.mean(recalls)), 'std': float(np.std(recalls))},
+        't_test_results_accuracy': {'t_stat': t_stat_acc, 'p_value': p_value_acc},
+        't_test_results_f1_score': {'t_stat': t_stat_f1, 'p_value': p_value_f1},
+        'confidence_level_accuracy': confidence_level_accuracy,
+        'confidence_level_f1_score': confidence_level_f1_score,
+        'num_all_samples': len(X),
+        'num_features': X.shape[1],
+        'split_test': len(X_test),
+        'n_splits_t_test': n_iterations,
+        'number_of_labels': num_classes,
+        'model_evaluation_date': datetime.now().isoformat(),
+        'version': f"v{next_version}",
+        'exam_id': exam_id,
+        'job_id': job_id
+    }
     
     card_path = os.path.join(model_directory, card_filename)
     with open(card_path, 'w') as f:
-        json.dump(card_info, f, indent=4)
+        json.dump(card_info_json, f, indent=4)
     
     ModelDetails.add_record(db, card_info)
     print(f"Final model and metadata saved to {model_directory}")

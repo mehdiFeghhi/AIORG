@@ -13,7 +13,7 @@ class BaseModel:
         self.model = model(**kwargs)
         self.param_grid = param_grid if param_grid is not None else {}
     
-    def train(self, X_train, y_train):
+    def fit(self, X_train, y_train):
         """
         Train the model on the given dataset.
         """

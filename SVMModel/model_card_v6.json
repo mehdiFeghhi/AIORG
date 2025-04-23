@@ -1,0 +1,37 @@
+{
+    "name_object_predict": "job_performance",
+    "address": "SVMModel/model_v6.joblib",
+    "feature_engineering_details_address": "SVMModel/feature_engineering_v6.json",
+    "architecture": "SVMModel",
+    "accuracy_results": {
+        "mean": 0.35,
+        "std": 0.0
+    },
+    "f1_score_results": {
+        "mean": 0.3259259259259259,
+        "std": 0.0
+    },
+    "precision_results": {
+        "mean": 0.3277777777777778,
+        "std": 0.0
+    },
+    "recall_results": {
+        "mean": 0.3333333333333333,
+        "std": 0.0
+    },
+    "t_test_results_accuracy": {
+        "t_stat": Infinity,
+        "p_value": 0.0
+    },
+    "t_test_results_f1_score": {
+        "t_stat": -Infinity,
+        "p_value": 0.0
+    },
+    "confidence_level_accuracy": 100.0,
+    "confidence_level_f1_score": 100.0,
+    "num_all_samples": 100,
+    "num_features": 6,
+    "split_test": 20,
+    "n_splits_t_test": 5,
+    "number_of_labels": 3,
+    "model_evaluation_date": 

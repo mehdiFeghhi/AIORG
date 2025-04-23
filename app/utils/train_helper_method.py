@@ -3,7 +3,7 @@ from enum import Enum
 
 class ModelName(str, Enum):
     SVM = "SVM"
-    LSTM = "LSTM"
+    # LSTM = "LSTM"
     XgBoost = "XgBoost"
     MLP = "MLP"
     DecisionTree = "DecisionTree"
