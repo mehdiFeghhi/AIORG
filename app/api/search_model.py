@@ -35,7 +35,8 @@ async def find_model_details_by_id(
         )
 
     return {
-        "address": model_details.address,
+        "model_id": model_details.id,
+        "object_predict": model_details.name_object_predict,
         "architecture": model_details.architecture,
         "accuracy_results": model_details.accuracy_results,
         "f1_score_results": model_details.f1_score_results,
@@ -82,7 +83,40 @@ async def find_models_by_exam_and_job(
         {
             "model_id": model.id,
             "version": model.version,
-            "model_name": model.name_object_predict,
+            "object_predict": model.name_object_predict,
+            "accuracy_result": model.accuracy_results
+        }
+        for model in models
+    ]
+    return result
+
+
+
+@router.get("/details_by_exam_and_job_object_predict", status_code=status.HTTP_200_OK)
+async def find_models_by_exam_and_job(
+    exam_id: Optional[int] = None,
+    job_id: Optional[int] = None,
+    name_object_predict: Optional[str] = None,
+    db: Session = Depends(get_db)
+) -> List[Dict[str, Optional[str] | int | Dict[str, float]]]:
+    """
+    Fetches model details based on exam_id and job_id.
+
+    Args:
+        exam_id (int, optional): The exam ID to filter models. Defaults to None.
+        job_id (int, optional): The job ID to filter models. Defaults to None.
+        db (Session): SQLAlchemy database session.
+
+    Returns:
+        list[dict]: List of dictionaries with model details.
+    """
+    models = ModelDetails.find_models_by_exam_and_job_id_object_predict(db, exam_id, job_id, name_object_predict)
+
+    result = [
+        {
+            "model_id": model.id,
+            "version": model.version,
+            "object_predict": model.name_object_predict,
             "accuracy_result": model.accuracy_results
         }
         for model in models

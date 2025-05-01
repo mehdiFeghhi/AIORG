@@ -145,6 +145,19 @@ class ModelDetails(Base):
             query = query.filter(cls.job_id == job_id)
         return query.all()
 
+    @classmethod
+    def find_models_by_exam_and_job_id_object_predict(cls, db: Session, exam_id: int = None, job_id: int = None, name_object_predict:str = None):
+
+        query = db.query(cls)
+        if exam_id:
+            query = query.filter(cls.exam_id == exam_id)
+        if job_id:
+            query = query.filter(cls.job_id == job_id)
+        if name_object_predict:
+            query = query.filter(cls.name_object_predict == name_object_predict)
+        return query.all()
+
+
 
     @classmethod
     def delete_model_by_id(cls, db: Session, model_id: int):
