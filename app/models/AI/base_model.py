@@ -1,8 +1,8 @@
 import joblib
-
+import inspect
 
 class BaseModel:
-    def __init__(self, model, param_grid=None, **kwargs):
+    def __init__(self, model_class, param_grid=None, num_classes=None, **kwargs):
         """
         Initialize a base model with a given sklearn or xgboost model and any specific parameters.
         
@@ -10,7 +10,13 @@ class BaseModel:
         param_grid: Dictionary of hyperparameters for GridSearchCV (optional, default is None)
         **kwargs: Additional keyword arguments for model initialization (e.g., n_estimators for RandomForest, etc.)
         """
-        self.model = model(**kwargs)
+
+        self.model_class = model_class
+        self.param_grid = param_grid or {}
+        init_signature = inspect.signature(model_class.__init__)
+        if num_classes is not None and 'num_class' in init_signature.parameters:
+            kwargs['num_class'] = num_classes
+        self.model = self.model_class(**kwargs)
         self.param_grid = param_grid if param_grid is not None else {}
     
     def fit(self, X_train, y_train):

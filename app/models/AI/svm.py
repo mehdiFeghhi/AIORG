@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 class SVMModel(BaseModel):
-    def __init__(self, param_grid=None, **kwargs):
+    def __init__(self, param_grid=None, num_classes=None, **kwargs):
         """
         Initialize the SVM model with custom parameters. Inherits from BaseModel.
         
@@ -24,7 +24,7 @@ class SVMModel(BaseModel):
         self.param_grid = param_grid
         
         # Call the parent class constructor to initialize the model
-        super().__init__(SVC, param_grid, **kwargs)
+        super().__init__(SVC, param_grid,num_classes=num_classes,**kwargs)
         self.model.__class__.__name__ = 'SVM'
 
 

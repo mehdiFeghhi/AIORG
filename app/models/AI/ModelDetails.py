@@ -179,4 +179,3 @@ class ModelDetails(Base):
             db.refresh(model)
             return model
         return None
-

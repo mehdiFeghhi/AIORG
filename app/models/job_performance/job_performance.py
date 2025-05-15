@@ -24,9 +24,9 @@ class JobPerformance(Base):
         Args:
             db (Session): SQLAlchemy database session.
             person_id (int): The person ID of the employee.
-            job_efficiency_rank (float): The rank for the employee's job efficiency (1-10).
-            improvement_rank (float): The rank for the employee's improvement (1-10).
-            satisfaction_score (float): The score for the employee's job satisfaction (1-10).
+            job_efficiency_rank (float): The rank for the employee's job efficiency (1-100).
+            improvement_rank (float): The rank for the employee's improvement (1-100).
+            satisfaction_score (float): The score for the employee's job satisfaction (1-100).
             job_id (int): The job ID associated with the performance record.
             created_at (str, optional): The creation timestamp in Jalali calendar format (yyyy/mm/dd).
 
@@ -34,10 +34,17 @@ class JobPerformance(Base):
             JobPerformance: The newly created job performance record.
         """
         try:
+
+
             # Convert the provided Jalali datetime string to Gregorian datetime
-            jalali_datetime = JalaliDatetime.strptime(created_at, "%Y/%m/%d")
+            try:
+                jalali_datetime = JalaliDatetime.strptime(created_at, "%Y/%m/%d")
+            except ValueError:
+                jalali_datetime = JalaliDatetime.strptime(created_at, "%Y-%m-%d")
+
             gregorian_datetime = jalali_datetime.todatetime()  # Convert to Gregorian datetime
-            
+
+
             # Extract Jalali year from the provided date
             jalali_year = jalali_datetime.year
             
@@ -116,7 +123,7 @@ class JobPerformance(Base):
             try:
                 jalali_datetime = JalaliDatetime.strptime(created_at, "%Y/%m/%d")
             except ValueError:
-                raise ValueError("Invalid date format. Expected format: YYYY/MM/DD")
+                jalali_datetime = JalaliDatetime.strptime(created_at, "%Y-%m-%d")
 
             gregorian_datetime = jalali_datetime.todatetime()  # Convert to Gregorian datetime
 

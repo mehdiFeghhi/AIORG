@@ -5,7 +5,7 @@ import numpy as np
 
 
 class MLPModel(BaseModel):
-    def __init__(self, param_grid=None, **kwargs):
+    def __init__(self, param_grid=None, num_classes=None, **kwargs):
         """
         Initialize the MLP model with custom parameters. Inherits from BaseModel.
         
@@ -27,6 +27,6 @@ class MLPModel(BaseModel):
         self.param_grid = param_grid
         
         # Call the parent class constructor to initialize the model
-        super().__init__(MLPClassifier, param_grid, **kwargs)
+        super().__init__(MLPClassifier, param_grid, num_classes=num_classes, **kwargs)
         self.model.__class__.__name__ = 'MLP'
 

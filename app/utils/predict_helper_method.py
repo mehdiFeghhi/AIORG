@@ -56,6 +56,7 @@ def find_essential_parameter(model_id: int, db):
     feature_details_path = Path(feature_engineering_details_address)
     try:
         with feature_details_path.open('r') as file:
+        # with open (feature_engineering_details_address, 'r') as file:
             feature_details = json.load(file)
     except FileNotFoundError:
         raise FileNotFoundError(f"Feature engineering details file not found at {feature_engineering_details_address}.")

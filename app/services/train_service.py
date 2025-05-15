@@ -15,24 +15,40 @@ from app.utils.train_helper_method import calculate_confidence_level, manage_mod
 
 
 
-def tune_hyperparameters(model, X_train, Y_train, param_grid):
+def tune_hyperparameters(model, X_train, Y_train, param_grid,num_classes=None):
     """
     Tune hyperparameters using GridSearchCV.
     """
     if not param_grid:
         print("No hyperparameter grid provided. Skipping hyperparameter tuning.")
         return {}
-    
-    grid_search = GridSearchCV(model, param_grid, cv=5, scoring='accuracy')
+
+    base_model = model(num_classes=num_classes)
+
+    grid_search = GridSearchCV(
+        estimator=base_model.model,      # خود شیء sklearn underneath
+        param_grid=param_grid,
+        cv=5,
+        scoring='accuracy'
+    )
     grid_search.fit(X_train, Y_train)
     return grid_search.best_params_
 
 
-def train_and_evaluate(model_class, best_params, X_train, Y_train, X_test, Y_test):
+
+
+def train_and_evaluate(model_class, best_params, X_train, Y_train, X_test, Y_test,
+                       num_classes=None):
     """
     Train the model with the best parameters and evaluate it.
     """
-    model = model_class(**best_params) if best_params else model_class()
+    # model = model_class(**best_params) if best_params else model_class()
+    init_kwargs = {}
+    if best_params:
+        init_kwargs.update(best_params)
+    # همیشه num_classes را پاس می‌دهیم (اگر None باشد BaseModel آن را نادیده می‌گیرد)
+    model = model_class(num_classes=num_classes, **init_kwargs)
+
     model.fit(X_train, Y_train)
     Y_pred = model.predict(X_test)
     
@@ -60,11 +76,11 @@ def train_model(
         np.random.seed(42 + i)
         X_train, X_test, Y_train, Y_test,feature_engineering_details = enhance_dataset(X,Y,num_classes,test_size)
         
-        best_params = tune_hyperparameters(model_class, X_train, Y_train, param_grid)
+        best_params = tune_hyperparameters(model_class, X_train, Y_train, param_grid,num_classes)
         best_params_list.append(best_params)
         
         accuracy, f1, precision, recall = train_and_evaluate(
-            model_class, best_params, X_train, Y_train, X_test, Y_test
+            model_class, best_params, X_train, Y_train, X_test, Y_test,num_classes
         )
         
         accuracies.append(accuracy)
@@ -86,7 +102,7 @@ def train_model(
         avg_accuracy_per_param.append((param_dict, mean_acc))
     
     best_final_params = max(avg_accuracy_per_param, key=lambda x: x[1])[0]
-    final_model = model_class(**best_final_params)
+    final_model = model_class(num_classes=num_classes,**best_final_params)
     X_train, X_test, Y_train, Y_test,feature_engineering_details = enhance_dataset(X,Y,num_classes,test_size)
     final_model.fit(X_train, Y_train)
     # print("Hi mehdi")

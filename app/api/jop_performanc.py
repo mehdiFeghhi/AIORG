@@ -4,6 +4,7 @@ from typing import List, Dict, Union
 from khayyam import JalaliDatetime
 from app.database import get_db
 from app.models.job_performance.job_performance import JobPerformance
+from app.utils.public_method import number_validation
 
 router = APIRouter()
 
@@ -20,6 +21,17 @@ def add_job_performance(
     """
     Add a new job performance record.
     """
+    # Define your lower and upper bounds
+    lower_bond = 0
+    uper_bond = 100
+
+    if not number_validation(job_efficiency_rank,improvement_rank,satisfaction_score,lower_bond,uper_bond):
+        raise HTTPException(
+            status_code=400,
+            detail="One or more input values are out of allowed bounds (0,100)."
+        )
+
+
     try:
         new_performance = JobPerformance.add_performance(
             db, person_id, job_efficiency_rank, improvement_rank, satisfaction_score, job_id, created_at
@@ -77,6 +89,17 @@ def update_job_performance(
     """
     Update a job performance record for a specific person in the same Jalali year based on created_at.
     """
+    # Define your lower and upper bounds
+    lower_bond = 0.0
+    uper_bond = 100
+    
+    if not number_validation(job_efficiency_rank,improvement_rank,satisfaction_score,lower_bond,uper_bond):
+        raise HTTPException(
+            status_code=400,
+            detail="One or more input values are out of allowed bounds."
+        )
+
+    
     try:
         updated_record = JobPerformance.update_performance_by_person_and_date(
             db, person_id, job_id, created_at,

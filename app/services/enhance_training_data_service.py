@@ -104,7 +104,16 @@ def enhance_dataset(
 
     # Reindex the columns in X_train and X_test to match the final feature order
     X_train = X_train.reindex(columns=feature_order, fill_value=0)
+
     X_test = X_test.reindex(columns=feature_order, fill_value=0)
+
+    X_train, Y_train = add_synthetic_samples_for_missing_classes(
+        X_train, Y_train,
+        num_classes=num_classes,
+        numerical_cols=attributes['numerical_variables_for_normalization'],
+        categorical_cols=list(attributes['one_hot_mapping'].keys())
+        )
+
 
     print("help me!")
     print(X_train)
@@ -185,3 +194,66 @@ def categorize_to_classes(Y: pd.Series, num_classes: int) -> pd.Series:
 
     return Y_classified
 
+
+def add_synthetic_samples_for_missing_classes(
+    X_train: pd.DataFrame,
+    Y_train: pd.Series,
+    num_classes: int,
+    numerical_cols: List[str],
+    categorical_cols: List[str],
+    random_state: int = 42
+) -> Tuple[pd.DataFrame, pd.Series]:
+    """
+    Add one synthetic sample for each missing class in Y_train.
+
+    Parameters:
+        X_train (pd.DataFrame): The training features after encoding.
+        Y_train (pd.Series): The training labels.
+        num_classes (int): Total number of expected classes.
+        numerical_cols (List[str]): Columns that were normalized.
+        categorical_cols (List[str]): Original categorical column names (before one-hot encoding).
+        random_state (int): Random seed.
+
+    Returns:
+        Tuple: Updated (X_train, Y_train)
+    """
+    np.random.seed(random_state)
+
+    existing_classes = set(Y_train.unique())
+    all_classes = set(range(num_classes))
+    missing_classes = sorted(all_classes - existing_classes)
+
+    print(f"Missing classes: {missing_classes}")
+
+    X_synthetic = []
+    Y_synthetic = []
+
+    for cls in missing_classes:
+        dummy_row = {}
+
+        # 1. Generate synthetic numerical features
+        for col in X_train.columns:
+            if col in numerical_cols:
+                dummy_row[col] = X_train[col].mean() + np.random.normal(0, 0.05)
+            else:
+                dummy_row[col] = 0.0  # default for one-hot
+
+        # 2. Set one-hot columns properly
+        for prefix in categorical_cols:
+            possible_cols = [col for col in X_train.columns if col.startswith(prefix + "_")]
+            if possible_cols:
+                chosen = np.random.choice(possible_cols)
+                dummy_row[chosen] = 1.0
+
+        X_synthetic.append(dummy_row)
+        Y_synthetic.append(cls)
+
+    if X_synthetic:
+        X_synthetic_df = pd.DataFrame(X_synthetic, columns=X_train.columns)
+        Y_synthetic_series = pd.Series(Y_synthetic, name=Y_train.name)
+
+        # Append to training data
+        X_train = pd.concat([X_train, X_synthetic_df], ignore_index=True)
+        Y_train = pd.concat([Y_train, Y_synthetic_series], ignore_index=True)
+
+    return X_train, Y_train

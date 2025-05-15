@@ -1,12 +1,15 @@
 import os
 from fastapi import UploadFile
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# تعیین مسیر اصلی برنامه (دایرکتوری جاری فایل پایتون)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Get upload directory from environment variables (default to 'uploaded_files')
-UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploaded_files")
+# مسیر دایرکتوری آپلود (بدون استفاده از فایل env)
+UPLOAD_DIR_NAME = "uploaded_files"
+
+# مسیر کامل برای ذخیره‌سازی فایل‌ها
+UPLOAD_DIR = os.path.join(BASE_DIR, UPLOAD_DIR_NAME)
+
 
 def ensure_directory_exists(directory: str) -> None:
     """

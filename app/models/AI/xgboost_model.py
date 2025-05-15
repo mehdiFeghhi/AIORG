@@ -4,7 +4,7 @@ import xgboost as xgb
 from .base_model import BaseModel  # Ensure BaseModel is implemented correctly
 
 class XGBoostModel(BaseModel):
-    def __init__(self, param_grid=None, **kwargs):
+    def __init__(self, num_classes,param_grid=None, **kwargs):
         """
         Initialize the XGBoost model with custom hyperparameters.
 
@@ -22,9 +22,10 @@ class XGBoostModel(BaseModel):
             'colsample_bytree': [0.8, 1.0],
         }
 
+        kwargs.setdefault('objective', 'multi:softprob')  # multi-class prob output
         # Use the provided param_grid or fall back to the default
         self.param_grid = param_grid or default_param_grid
         xgb.XGBRFClassifier
         # Initialize the BaseModel with XGBClassifier as the base estimator
-        super().__init__(xgb.XGBClassifier, self.param_grid, **kwargs)
+        super().__init__(xgb.XGBClassifier, self.param_grid,num_classes=num_classes,  **kwargs)
         self.model.__class__.__name__ = 'XGB'

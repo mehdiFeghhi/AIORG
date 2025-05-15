@@ -3,7 +3,7 @@ from .base_model import BaseModel
 import numpy as np
 
 class DecisionTreeModel(BaseModel):
-    def __init__(self, param_grid=None, **kwargs):
+    def __init__(self, param_grid=None, num_classes=None, **kwargs):
         """
         Initialize the DecisionTreeClassifier model with custom parameters.
         
@@ -25,6 +25,6 @@ class DecisionTreeModel(BaseModel):
         self.param_grid = param_grid
 
         # Call the parent class constructor to initialize the model
-        super().__init__(DecisionTreeClassifier, param_grid, **kwargs)
+        super().__init__(DecisionTreeClassifier, param_grid, num_classes=num_classes, **kwargs)
         self.model.__class__.__name__ = 'DecisionTree'
 

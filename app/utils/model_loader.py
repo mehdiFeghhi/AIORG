@@ -1,5 +1,6 @@
 from app.models.AI import decision_tree,LSTM,MLP,svm,xgboost_model
 from app.utils.public_method import load_json
+import numpy as np
 
 
 def find_model(model_address:str):
@@ -53,17 +54,15 @@ def find_model(model_address:str):
 
         return model,number_of_label
 
+def get_prediction_range(num_classes: int, prediction):
 
-def get_prediction_range(num_classes: int, prediction: int) -> str:
-    """
-    دریافت تعداد کلاس‌ها و پیش‌بینی مدل و برگشت تناسب درصدی مطابق با قوانین مشخص‌شده.
-    """
-    # محاسبه فاصله‌ی بین هر کلاس
-    range_percentage = 100 / (num_classes - 1)  # مثلا برای 5 کلاس، فاصله بین هر دو کلاس 25 درصد است.
+    if isinstance(prediction, np.ndarray):
+        value = prediction.item() if prediction.size == 1 else prediction[0]
+    else:
+        value = prediction
 
-    # محاسبه محدوده درصدی
-    lower_bound = prediction * range_percentage
-    upper_bound = (prediction + 1) * range_percentage
-    
-    # بازگشت نتیجه به صورت رشته
+    range_size = 100 / num_classes
+    lower_bound = value * range_size
+    upper_bound = (value + 1) * range_size
+
     return f"{lower_bound:.0f} تا {upper_bound:.0f}"
