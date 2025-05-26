@@ -2,8 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.AI.ModelDetails import ModelDetails
+from app.utils.public_method import clean_all_values
 from typing import List, Dict, Optional
 from datetime import datetime
+
 
 router = APIRouter()
 
@@ -34,19 +36,19 @@ async def find_model_details_by_id(
             detail=f"Model with ID {query_id} not found."
         )
 
-    return {
+    raw_data = {
         "model_id": model_details.id,
         "object_predict": model_details.name_object_predict,
         "architecture": model_details.architecture,
-        "accuracy_results": model_details.accuracy_results,
-        "f1_score_results": model_details.f1_score_results,
-        "precision_results": model_details.precision_results,
-        "recall_results": model_details.recall_results,
-        "t_test_results_accuracy": model_details.t_test_results_accuracy,
-        "t_test_results_f1_score": model_details.t_test_results_f1_score,
-        "confidence_level_accuracy": model_details.confidence_level_accuracy,
-        "confidence_level_f1_score": model_details.confidence_level_f1_score,
-        "num_all_samples": model_details.num_all_samples,
+        "accuracy_results": clean_all_values(model_details.accuracy_results),
+        "f1_score_results": clean_all_values(model_details.f1_score_results),
+        "precision_results": clean_all_values(model_details.precision_results),
+        "recall_results": clean_all_values(model_details.recall_results),
+        "t_test_results_accuracy": clean_all_values(model_details.t_test_results_accuracy),
+        "t_test_results_f1_score": clean_all_values(model_details.t_test_results_f1_score),
+        "confidence_level_accuracy": clean_all_values(model_details.confidence_level_accuracy),
+        "confidence_level_f1_score": clean_all_values(model_details.confidence_level_f1_score),
+        "num_all_samples": clean_all_values(model_details.num_all_samples),
         "num_features": model_details.num_features,
         "split_test": model_details.split_test,
         "n_splits_t_test": model_details.n_splits_t_test,
@@ -56,6 +58,9 @@ async def find_model_details_by_id(
         "job_id": model_details.job_id,
         "exam_id": model_details.exam_id,
     }
+    
+    return clean_all_values(raw_data)
+
 
 
 
@@ -80,12 +85,12 @@ async def find_models_by_exam_and_job(
     models = ModelDetails.find_models_by_exam_and_job_id(db, exam_id, job_id)
 
     result = [
-        {
+        clean_all_values({
             "model_id": model.id,
             "version": model.version,
             "object_predict": model.name_object_predict,
-            "accuracy_result": model.accuracy_results
-        }
+            "accuracy_result": clean_all_values(model.accuracy_results)
+        })
         for model in models
     ]
     return result
@@ -113,12 +118,12 @@ async def find_models_by_exam_and_job(
     models = ModelDetails.find_models_by_exam_and_job_id_object_predict(db, exam_id, job_id, name_object_predict)
 
     result = [
-        {
+        clean_all_values({
             "model_id": model.id,
             "version": model.version,
-            "object_predict": model.name_object_predict,
-            "accuracy_result": model.accuracy_results
-        }
+            "object_predict": clean_all_values(model.name_object_predict),
+            "accuracy_result": clean_all_values(model.accuracy_results)
+        })
         for model in models
     ]
     return result

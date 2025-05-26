@@ -1,4 +1,10 @@
 import json
+from typing import Dict, Any, Union
+import math
+import ast
+import numpy as np
+import re
+
 
 
 def load_json(file_path: str):
@@ -48,4 +54,45 @@ def number_validation(job_efficiency_rank, improvement_rank, satisfaction_score,
     return True
 
 
+def try_clean_stringified_dict(value: str) -> Any:
+    # جایگزینی np.float64(...) با مقدار داخلش
+    value = re.sub(r"np\.float64\(([^)]+)\)", r"\1", value)
 
+    # جایگزینی nan و inf با None
+    value = re.sub(r"\bnan\b", "None", value, flags=re.IGNORECASE)
+    value = re.sub(r"\binf\b", "None", value, flags=re.IGNORECASE)
+    value = re.sub(r"\-inf\b", "None", value, flags=re.IGNORECASE)
+
+    try:
+        return ast.literal_eval(value)
+    except Exception:
+        raise ValueError("Invalid input string format.")
+
+def sanitize_value(value: Any) -> Any:
+    if isinstance(value, np.generic):
+        value = value.item()
+
+    if isinstance(value, float):
+        if math.isnan(value) or math.isinf(value):
+            return None
+        return value
+
+    if isinstance(value, dict):
+        return {k: sanitize_value(v) for k, v in value.items()}
+
+    if isinstance(value, (list, tuple)):
+        return [sanitize_value(v) for v in value]
+
+    if isinstance(value, str):
+        if value.strip().startswith("{") or value.strip().startswith("["):
+            try:
+                evaluated = try_clean_stringified_dict(value)
+                return sanitize_value(evaluated)
+            except Exception:
+                return value  # اگر نشد، بذار همون string بمونه
+        return value
+
+    return value
+
+def clean_all_values(data: Dict[str, Any]) -> Dict[str, Any]:
+    return {k: sanitize_value(v) for k, v in data.items()}

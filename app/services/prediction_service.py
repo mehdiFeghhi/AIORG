@@ -83,7 +83,6 @@ from app.utils.model_loader import get_prediction_range
 from app.utils.predict_helper_method import find_essential_parameter
 from app.logger import logger
 import pandas as pd
-import numpy as np
 
 
 def predict_job_utils(name_object_predict: str, data_person: dict, model_id: int, db) -> str:
